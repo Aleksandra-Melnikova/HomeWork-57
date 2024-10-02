@@ -1,21 +1,28 @@
 import { useState } from "react";
 import { IUserMutation } from "../../types";
 import * as React from "react";
+import { IUser } from '../../types';
 
 
+interface Props {
+  addNewUser: (user: IUser) => void;
+}
 
-const UserForm = () => {
-  const category =[
-    {title:'user'},
-    {title:'editor'},
-    {title:'admin'},
-  ]
+
+const UserForm:React.FC<Props> = ({addNewUser}) => {
   const [newUser, setNewUser] = useState<IUserMutation>({
     name: "",
     email: "",
     category: '',
     check: false,
   });
+
+
+  const category =[
+    {title:'user'},
+    {title:'editor'},
+    {title:'admin'},
+  ]
 
   const changeUser = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -30,18 +37,41 @@ const UserForm = () => {
   };
 
 
-
-  const soldCheckbox = ({ target: {checked} }) => {
-    const copyNewUser= {...newUser};
-    copyNewUser.check = checked;
-    setNewUser(copyNewUser);
+  const changeActiveStatus = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setNewUser((prevState) => {
+      return {
+        ...prevState,
+        [e.target.name]: e.target.checked,
+      };
+    });
     console.log(newUser);
+  };
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newUser.name.trim().length === 0 && newUser.email.trim().length ) {
+      alert("Заполните все поля!");
+    } else {
+      addNewUser({
+        id: String(new Date()),
+        ...newUser,
+      });
+
+      setNewUser({
+        name: "",
+        email: "",
+        category: '',
+        check: false,
+      });
+    }
   };
 
 
   return (
     <>
-    <form>
+    <form onSubmit={onSubmit}>
       <h3>Add new dish</h3>
       <div className="form-group mb-2">
         <label htmlFor="name">Title:</label>
@@ -84,14 +114,12 @@ const UserForm = () => {
       </div>
 
       <div className="form-group mb-2">
-        <label htmlFor="activeStatus">Active or non-active</label>
+        <label htmlFor="activeStatus">Active or not active</label>
         <input
-          checked={newUser.check}
-          onChange={soldCheckbox}
+          onChange={changeActiveStatus}
           type="checkbox"
-          id="activeStatus"
-          name="activeStatus"
-          required
+          id="check"
+          name="check"
         />
       </div>
 
