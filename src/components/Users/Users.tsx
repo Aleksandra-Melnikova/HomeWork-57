@@ -1,6 +1,6 @@
 import UserItem from "./UserItem.tsx";
 import * as React from "react";
-import { IUser } from '../../types';
+import { IUser } from "../../types";
 interface Props {
   users: IUser[];
 }
